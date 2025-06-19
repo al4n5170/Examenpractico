@@ -1,75 +1,141 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { useFormik } from 'formik';
+import React from 'react';
+import * as Yup from 'yup';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const RegistroForm = () => {
+  const formik = useFormik({
+    initialValues: {
+      nombre: '',
+      correo: '',
+      contrasena: '',
+      confirmarContrasena: '',
+      terminos: false,
+    },
+    validationSchema: Yup.object({
+      nombre: Yup.string()
+        .min(3, 'Mínimo 3 caracteres')
+        .required('Requerido'),
+      correo: Yup.string()
+        .email('Correo no válido')
+        .required('Requerido'),
+      contrasena: Yup.string()
+        .min(6, 'Mínimo 6 caracteres')
+        .required('Requerido'),
+      confirmarContrasena: Yup.string()
+        .oneOf([Yup.ref('contrasena'), undefined], 'Las contraseñas no coinciden')
+        .required('Requerido'),
+      terminos: Yup.boolean()
+        .oneOf([true], 'Debes aceptar los términos y condiciones'),
+    }),
+    onSubmit: (values) => {
+      alert('Formulario enviado con éxito');
+      console.log(values);
+    },
+  });
 
-export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
-}
+    <form
+      onSubmit={formik.handleSubmit}
+      style={{
+        backgroundColor: 'white',
+        padding: '30px',
+        maxWidth: '400px',
+        margin: 'auto',
+        borderRadius: '8px',
+        boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+        fontFamily: 'Arial, sans-serif'
+      }}
+    >
+      <h2 style={{ textAlign: 'center' }}>Formulario de Registro</h2>
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+      <div style={{ marginBottom: '15px' }}>
+        <label>Nombre completo:</label>
+        <input
+          type="text"
+          name="nombre"
+          onChange={formik.handleChange}
+          value={formik.values.nombre}
+          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+        />
+        {formik.touched.nombre && formik.errors.nombre && (
+          <div style={{ color: 'red' }}>{formik.errors.nombre}</div>
+        )}
+      </div>
+
+      <div style={{ marginBottom: '15px' }}>
+        <label>Correo electrónico:</label>
+        <input
+          type="email"
+          name="correo"
+          onChange={formik.handleChange}
+          value={formik.values.correo}
+          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+        />
+        {formik.touched.correo && formik.errors.correo && (
+          <div style={{ color: 'red' }}>{formik.errors.correo}</div>
+        )}
+      </div>
+
+      <div style={{ marginBottom: '15px' }}>
+        <label>Contraseña:</label>
+        <input
+          type="password"
+          name="contrasena"
+          onChange={formik.handleChange}
+          value={formik.values.contrasena}
+          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+        />
+        {formik.touched.contrasena && formik.errors.contrasena && (
+          <div style={{ color: 'red' }}>{formik.errors.contrasena}</div>
+        )}
+      </div>
+
+      <div style={{ marginBottom: '15px' }}>
+        <label>Confirmar contraseña:</label>
+        <input
+          type="password"
+          name="confirmarContrasena"
+          onChange={formik.handleChange}
+          value={formik.values.confirmarContrasena}
+          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+        />
+        {formik.touched.confirmarContrasena && formik.errors.confirmarContrasena && (
+          <div style={{ color: 'red' }}>{formik.errors.confirmarContrasena}</div>
+        )}
+      </div>
+
+      <div style={{ marginBottom: '15px' }}>
+        <label>
+          <input
+            type="checkbox"
+            name="terminos"
+            onChange={formik.handleChange}
+            checked={formik.values.terminos}
+          />
+          {' '}
+          Acepto los términos y condiciones
+        </label>
+        {formik.touched.terminos && formik.errors.terminos && (
+          <div style={{ color: 'red' }}>{formik.errors.terminos}</div>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        style={{
+          width: '100%',
+          padding: '10px',
+          backgroundColor: '#4CAF50',
+          color: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: 'pointer'
+        }}
+      >
+        Registrarse
+      </button>
+    </form>
+  );
+};
+
+export default RegistroForm;
